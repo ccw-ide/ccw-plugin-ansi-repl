@@ -39,8 +39,10 @@
 ;; The following methods use reflection otherwise clojure
 ;; compilation will fail without the ansi console plugin.
 (def ansi-console-bundle (bundle/bundle "net.mihai-nita.ansicon.plugin"))
-(def make-ansi-listener
-  (factories/make-factory ansi-console-bundle "mnita.ansiconsole.participants.AnsiConsoleStyleListener" []))
+(declare make-ansi-listener)
+(if (bundle/available? ansi-console-bundle)
+  (def make-ansi-listener
+      (factories/make-factory ansi-console-bundle "mnita.ansiconsole.participants.AnsiConsoleStyleListener" [])))
 
 ;; Plugin state that survives plugin reload.
 ;; Used to make sure we're not adding new listeners when one
