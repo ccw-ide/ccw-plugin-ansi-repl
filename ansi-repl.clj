@@ -117,16 +117,16 @@
                            (if (.isChecked (get-in state [:repls rv :action]))
                              (add-style-listener rv)
                              (remove-style-listener rv))))]
-			(doto action
-			  (.setToolTipText "Process ANSI escape code")
-			  (.setImageDescriptor icon-enabled-descriptor)
-        (.setId ansi-action-id))
-      (log (str "adding toolbar button on " (.getPartName rv)))
-			(.. rv getViewSite getActionBars getToolBarManager (add action))
-			(.. rv getViewSite getActionBars getToolBarManager (update true))
-			;; In a proxy there's no easy way to emulate the self-reference (this)
-			;; so we keep a record of the action for a given repl.
-			(alter-var-root #'state assoc-in [:repls rv :action] action)))
+    (doto action
+      (.setToolTipText "Process ANSI escape code")
+      (.setImageDescriptor icon-enabled-descriptor)
+      (.setId ansi-action-id))
+    (log (str "adding toolbar button on " (.getPartName rv)))
+    (.. rv getViewSite getActionBars getToolBarManager (add action))
+    (.. rv getViewSite getActionBars getToolBarManager (update true))
+    ;; In a proxy there's no easy way to emulate the self-reference (this)
+    ;; so we keep a record of the action for a given repl.
+    (alter-var-root #'state assoc-in [:repls rv :action] action)))
 
 ;; Install/uninstall on a given REPL
 (defn install-on [^REPLView rv]
@@ -156,24 +156,24 @@
   (when-let [^IPartListener pl (:part-listener state)]
     (log (str "removing part listener " pl))
     (.. PlatformUI
-	     getWorkbench
-	     getActiveWorkbenchWindow
-	     getPartService
-	     (removePartListener pl))
+      getWorkbench
+      getActiveWorkbenchWindow
+      getPartService
+      (removePartListener pl))
     (alter-var-root #'state dissoc :part-listener)))
 (defn add-part-listener []
   (if (bundle/available? ansi-console-bundle)
      (do
        (remove-part-listener)
-	     ;; adding part listener
+       ;; adding part listener
        (let [^IPartListener pl (make-part-listener)]
            (log (str "adding part listener"))
-		       (.. PlatformUI
-		         getWorkbench
-		         getActiveWorkbenchWindow
-		         getPartService
-		         (addPartListener pl))
-	         (alter-var-root #'state assoc :part-listener pl)))
+           (.. PlatformUI
+             getWorkbench
+             getActiveWorkbenchWindow
+             getPartService
+             (addPartListener pl))
+           (alter-var-root #'state assoc :part-listener pl)))
      (log "Cannot add part listener: ANSI Console plugin no longer available?")))
 
 ;; Install/Uninstall ansi support
@@ -181,14 +181,14 @@
   (log "installing ANSI REPL")
   (when (and (bundle/available? ansi-console-bundle) (not (installed?)))
     ;; install a part listener for handling future REPLs
-	  (add-part-listener)
+    (add-part-listener)
     (flag-installed)
-	  ;; handle existing REPLs
-	  (->> (CCWPlugin/getREPLViews)
+    ;; handle existing REPLs
+    (->> (CCWPlugin/getREPLViews)
       ;(map #(do (log (str "found " (.getPartName %))) %))
-	    (filter #(if-let [rvl (.getLaunch %)] (not (.isTerminated rvl))))
-	    (map #(install-on %))
-	    (doall)))
+      (filter #(if-let [rvl (.getLaunch %)] (not (.isTerminated rvl))))
+      (map #(install-on %))
+      (doall)))
   (log (status-msg)))
 (defn uninstall []
   (log "disabling ANSI REPL")
