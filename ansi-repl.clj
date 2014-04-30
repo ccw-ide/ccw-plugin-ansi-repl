@@ -49,9 +49,7 @@
 ;; is already present, otherwise reloading the plugin keeps
 ;; adding new listeners.
 ;; No need for an atom if only accessed from the UI thread.
-(declare state)
-(if-not (bound? #'state)
-  (def state {:installed false :part-listener nil :repls {}}))
+(defonce state {:installed false :part-listener nil :repls {}})
 (defn installed? []
   (:installed state))
 (defn flag-installed []
