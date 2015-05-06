@@ -1,3 +1,7 @@
+;; Licensed under The MIT License (MIT)
+;; http://opensource.org/licenses/MIT
+;; Copyright (c) 2014 François Rey
+
 ;; CounterClockWiwe plugin for adding ANSI escape code support to REPLs.
 ;; To enable its functionality install the ANSI console plugin found at:
 ;;  https://github.com/mihnita/ansi-econsole
@@ -7,11 +11,9 @@
 ;;  https://code.google.com/p/counterclockwise/issues/detail?id=624
 ;;  https://code.google.com/p/counterclockwise/issues/detail?id=629
 ;;
-;; Latest version at https://gist.github.com/fmjrey/9889500
-;;
-;; Licensed under The MIT License (MIT)
-;; http://opensource.org/licenses/MIT
-;; Copyright (c) 2014 François Rey
+;; Initial version by Fran�ois Rey at https://gist.github.com/fmjrey/9889500
+;; Fixes for further versions of Counterclockwise by Laurent Petit
+;;   available at https://github.com/laurentpetit/ccw-plugin-ansi-repl
 
 (ns ansi-repl
   (:require [ccw.bundle :as bundle]
@@ -25,8 +27,7 @@
     org.eclipse.jface.action.Action
     org.eclipse.jface.resource.ImageDescriptor
     [org.eclipse.ui PlatformUI IPartListener]
-    [org.eclipse.swt.custom StyledText ST]
-    ))
+    [org.eclipse.swt.custom StyledText ST]))
 
 ;; logging to eclipse log
 (defn log [& m]
@@ -92,7 +93,13 @@
       (remove-style-listener rv))
     (let [sl (make-ansi-listener)]
       (log (str "adding listener to " (.getPartName rv)))
+      (.removeLineStyleListener st rv)
       (.addLineStyleListener st sl)
+      ;; let's move the default REPL style listener last so that it can 
+      ;; take precedence over AnsiStyleListener (especially useful because
+      ;; AnsiStyleListener colorize with the same foreground colors all lines,
+      ;; even those that should not be touched)
+      (.addLineStyleListener st rv)
       (alter-var-root #'state assoc-in [:repls rv :listener] sl)
       (view-helpers/ui-async (redraw st)))))
 
@@ -106,25 +113,30 @@
     (.. rv getViewSite getActionBars getToolBarManager (remove ansi-action-id))
     (alter-var-root #'state update-in [:repls rv] dissoc :action)
     (log (str "removed toolbar button from " (.getPartName rv)))))
+
+(defn update-repl-ansi-state [^REPLView rv]
+  (if (.isChecked (get-in state [:repls rv :action]))
+    (add-style-listener rv)
+    (remove-style-listener rv)))
+
 (defn add-toolbar-action [^REPLView rv]
   (when (get-in state [:repls rv :action])
     (log (str "replacing toolbar button on " (.getPartName rv)))
     (remove-toolbar-action rv))
   (let [action (proxy [Action] ["Process ANSI escape code" Action/AS_CHECK_BOX]
-                         (run []
-                           (if (.isChecked (get-in state [:repls rv :action]))
-                             (add-style-listener rv)
-                             (remove-style-listener rv))))]
+                         (run [] (update-repl-ansi-state rv)))]
     (doto action
       (.setToolTipText "Process ANSI escape code")
       (.setImageDescriptor icon-enabled-descriptor)
-      (.setId ansi-action-id))
+      (.setId ansi-action-id)
+      (.setChecked true)) ;; we start with Ansi REPL enabled
     (log (str "adding toolbar button on " (.getPartName rv)))
     (.. rv getViewSite getActionBars getToolBarManager (add action))
     (.. rv getViewSite getActionBars getToolBarManager (update true))
     ;; In a proxy there's no easy way to emulate the self-reference (this)
     ;; so we keep a record of the action for a given repl.
-    (alter-var-root #'state assoc-in [:repls rv :action] action)))
+    (alter-var-root #'state assoc-in [:repls rv :action] action)
+    (update-repl-ansi-state rv)))
 
 ;; Install/uninstall on a given REPL
 (defn install-on [^REPLView rv]
