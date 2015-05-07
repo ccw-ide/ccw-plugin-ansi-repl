@@ -27,7 +27,11 @@
     org.eclipse.jface.action.Action
     org.eclipse.jface.resource.ImageDescriptor
     [org.eclipse.ui PlatformUI IPartListener]
-    [org.eclipse.swt.custom StyledText ST]))
+    [org.eclipse.swt.custom StyledText ST LineStyleListener]))
+
+;; Test CCW compatibility with the plugin
+(when-not (.isAssignableFrom CCWPlugin LineStyleListener)
+  (throw (RuntimeException. "Incompatible version of Counterclockwise with ansi-repl user plugin")))
 
 ;; logging to eclipse log
 (defn log [& m]
