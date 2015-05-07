@@ -4,6 +4,8 @@ This project is a Counterclockwise User Plugin which enables ANSI colors to be d
 
 This plugin's state is stable.
 
+NOTE: this plugin will only work with a version of Counterclockwise that is yet to be released (as of 2015/5/7). You can use continuous integration-based CCW version to test it, in the mean time http://updatesite.ccw-ide.org/branch/master/ )
+
 ## Pre-requisite
 
 The ANSI EConsole Eclipse Plugin ( http://marketplace.eclipse.org/content/ansi-escape-console ) must be installed and enabled.
