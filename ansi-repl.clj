@@ -30,7 +30,7 @@
     [org.eclipse.swt.custom StyledText ST LineStyleListener]))
 
 ;; Test CCW compatibility with the plugin
-(when-not (.isAssignableFrom CCWPlugin LineStyleListener)
+(when-not (.isAssignableFrom REPLView LineStyleListener)
   (throw (RuntimeException. "Incompatible version of Counterclockwise with ansi-repl user plugin")))
 
 ;; logging to eclipse log
