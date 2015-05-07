@@ -11,7 +11,7 @@
 ;;  https://code.google.com/p/counterclockwise/issues/detail?id=624
 ;;  https://code.google.com/p/counterclockwise/issues/detail?id=629
 ;;
-;; Initial version by FranÃois Rey at https://gist.github.com/fmjrey/9889500
+;; Initial version by Franï¿½ois Rey at https://gist.github.com/fmjrey/9889500
 ;; Fixes for further versions of Counterclockwise by Laurent Petit
 ;;   available at https://github.com/laurentpetit/ccw-plugin-ansi-repl
 
@@ -30,7 +30,7 @@
     [org.eclipse.swt.custom StyledText ST LineStyleListener]))
 
 ;; Test CCW compatibility with the plugin
-(when-not (.isAssignableFrom REPLView LineStyleListener)
+(when-not (.isAssignableFrom LineStyleListener REPLView)
   (throw (RuntimeException. "Incompatible version of Counterclockwise with ansi-repl user plugin")))
 
 ;; logging to eclipse log
