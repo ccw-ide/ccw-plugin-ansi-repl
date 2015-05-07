@@ -4,6 +4,10 @@ This project is a Counterclockwise User Plugin which enables ANSI colors to be d
 
 This plugin's state is stable.
 
+## Pre-requisite
+
+The ANSI EConsole Eclipse Plugin ( http://marketplace.eclipse.org/content/ansi-escape-console ) must be installed and enabled.
+
 ## Install
 
 The `~/.ccw/` folder is where Counterclockwise searches for User Plugins.
@@ -22,8 +26,7 @@ It is recommended to layout User Plugins inside this folder by mirroring Github'
 
 ## Usage
 
-This User Plugins detects the presence of the ANSI EConsole Eclipse Plugin ( http://marketplace.eclipse.org/content/ansi-escape-console ).
-If found, it will enable ANSI characters to be printed accordingly in a REPL log area.
+This plugin enables ANSI characters to be printed accordingly in a REPL log area.
 
 The plugin also adds an icon to REPLs which allows to disable ANSI EConsole styling.
 
