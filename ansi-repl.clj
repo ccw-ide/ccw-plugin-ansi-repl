@@ -20,7 +20,7 @@
              [ccw.core.factories :as factories]
              [ccw.e4.dsl  :refer :all]
              [ccw.eclipse :as eclipse]
-             [ccw.repl.view-helpers :as view-helpers])
+             [ccw.swt :as swt])
   (:import
     ccw.CCWPlugin 
     [ccw.repl REPLView]
@@ -89,7 +89,7 @@
       (if-not (. st (isDisposed)) (.removeLineStyleListener st sl))
       (alter-var-root #'state update-in [:repls rv] dissoc :listener)
       (log (str "removed listener for " (.getPartName rv)))
-      (view-helpers/ui-async (redraw st)))))
+      (swt/ui-async (redraw st)))))
 (defn add-style-listener [^REPLView rv]
   (let [^StyledText st (.logPanel rv)]
     (when (get-in state [:repls rv :listener])
@@ -105,7 +105,7 @@
       ;; even those that should not be touched)
       (.addLineStyleListener st rv)
       (alter-var-root #'state assoc-in [:repls rv :listener] sl)
-      (view-helpers/ui-async (redraw st)))))
+      (swt/ui-async (redraw st)))))
 
 ;; REPL Toolbar toggle button
 (when ansi-console-bundle
@@ -223,4 +223,4 @@
 (defkeybinding ansi-repl-status "Alt+U A")
 
 ;; Install upon starting the plugin
-(view-helpers/ui-async (install))
+(swt/ui-async (install))
