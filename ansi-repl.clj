@@ -89,7 +89,7 @@
       (if-not (. st (isDisposed)) (.removeLineStyleListener st sl))
       (alter-var-root #'state update-in [:repls rv] dissoc :listener)
       (log (str "removed listener for " (.getPartName rv)))
-      (swt/ui-async (redraw st)))))
+      (swt/doasync (redraw st)))))
 (defn add-style-listener [^REPLView rv]
   (let [^StyledText st (.logPanel rv)]
     (when (get-in state [:repls rv :listener])
@@ -105,7 +105,7 @@
       ;; even those that should not be touched)
       (.addLineStyleListener st rv)
       (alter-var-root #'state assoc-in [:repls rv :listener] sl)
-      (swt/ui-async (redraw st)))))
+      (swt/doasync (redraw st)))))
 
 ;; REPL Toolbar toggle button
 (when ansi-console-bundle
@@ -223,4 +223,4 @@
 (defkeybinding ansi-repl-status "Alt+U A")
 
 ;; Install upon starting the plugin
-(swt/ui-async (install))
+(swt/doasync (install))
